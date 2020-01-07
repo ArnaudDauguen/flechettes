@@ -55,25 +55,31 @@ function createPlayerNameQuestion(playerNumber){
 
 }
 
+function createPlayers(nbPlayer, gameMode){
+    let questionList = []
+    for(let nb = 1; nb <= nbPlayer; nb++){
+        questionList.push(createPlayerNameQuestion(nb))
+    }
+    return prompt(questionList)
+    .then((answers) => {
+        let players = []
+        for(let nb = 1; nb <= nbPlayer; nb++){
+            players.push(new Player(answers[nb], gameMode == 2 ? 301 : 0))
+        }
+        return players
+    })
+}
+
 
 
 async function initGame(){
     let nbPlayer = await askNumberOfPlayers().then((rep) => {return rep})
     let gameMode = await askGameMode().then((rep) => {return rep})
     const partie = gameMode == 1 ? new TourDuMonde() : (gameMode == 2 ? new Game301() : new Cricket())
-    let players = []
+    let players = await createPlayers(nbPlayer, gameMode).then((rep) => {return rep})
 
 
-    let questionList = []
-    for(let nb = 1; nb <= nbPlayer; nb++){
-        questionList.push(createPlayerNameQuestion(nb))
-    }
-    await prompt(questionList)
-    .then((answers) => {
-        for(let nb = 1; nb <= nbPlayer; nb++){
-            players.push(new Player(answers[nb]))
-        }
-    })
+    
 
 
     console.log(players[0].getScore())
