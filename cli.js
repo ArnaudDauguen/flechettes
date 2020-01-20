@@ -3,11 +3,11 @@
 const inquirer = require('inquirer')
 const prompt = inquirer.createPromptModule()
 
-const Jeu = require('./jeu.js')
-const TourDuMonde = require('./jeux/tourDuMonde.js')
-const Game301 = require('./jeux/game301.js')
-const Cricket = require('./jeux/cricket.js')
-const Player = require('./player.js')
+const Gamemode = require('./engine/gamemode.js')
+const AroundTheWorld = require('./engine/gamemode/aroundTheWorld.js')
+const Game301 = require('./engine/gamemode/game301.js')
+const Cricket = require('./engine/gamemode/cricket.js')
+const Player = require('./engine/player.js')
 
 
 
@@ -75,12 +75,13 @@ function createPlayers(nbPlayer, gameMode){
 async function initGame(){
     let nbPlayer = await askNumberOfPlayers().then((rep) => {return rep})
     let gameMode = await askGameMode().then((rep) => {return rep})
-    const partie = gameMode == 1 ? new TourDuMonde() : (gameMode == 2 ? new Game301() : new Cricket())
+    const partie = gameMode == 1 ? new AroundTheWorld() : (gameMode == 2 ? new Game301() : new Cricket())
     let players = await createPlayers(nbPlayer, gameMode).then((rep) => {return rep})
 
 
     
 
+    console.log(partie.getName())
 
     console.log(players[0].getScore())
 

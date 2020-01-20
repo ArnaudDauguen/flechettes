@@ -1,6 +1,7 @@
-class Jeu{
-    constructor(){
+class Gamemode{
+    constructor(name){
         this.players = []
+        this.name = name
     }
 
     static shuffle(players) {
@@ -17,6 +18,12 @@ class Jeu{
     shuflePlayer(){
         this.players = jeux.shuffle(this.players)
     }
+
+
+
+
+
+    getName() { return this.name }
 }
 
-module.exports = Jeu
+module.exports = Gamemode
