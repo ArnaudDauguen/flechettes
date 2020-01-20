@@ -5,6 +5,12 @@ class Cricket extends Gamemode{
         super("Le cricket")
         
     }
+
+    handle(shot){
+
+    }
+
+    
 }
 
 module.exports = Cricket
