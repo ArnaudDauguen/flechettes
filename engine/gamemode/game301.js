@@ -11,7 +11,7 @@ class Game301 extends Gamemode{
         const shotScore = shot.secteur * shot.multiply
         if(shotScore <= player.getScore()){
             player.addOrSubScore(- shotScore)
-            return player.getScore() == 0 ? super.endGame() : super.nextTurn()
+            return player.getScore() == 0  && shot.multiply == 2 ? super.endGame() : super.nextTurn()
         }
         return super.nextTurn()
     }
