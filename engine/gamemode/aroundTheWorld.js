@@ -3,7 +3,7 @@ const Gamemode = require('../gamemode.js')
 class AroundTheWorld extends Gamemode{
     constructor(){
         super("Tour du monde")
-        this.targetVictory = 5
+        this.targetVictory = 20
     }
 
     handleShot(secteur, multiply){
