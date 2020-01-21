@@ -1,0 +1,25 @@
+{
+  "name": "darts",
+  "version": "0.0.2",
+  "description": "ingesup tp darts",
+  "main": "cli.js",
+  "dependencies": {
+    "inquirer": "^7.0.3"
+  },
+  "scripts": {
+    "cli": "node cli.js",
+    "app": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArnaudDauguen/flechettes.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ArnaudDauguen/flechettes/issues"
+  },
+  "homepage": "https://github.com/ArnaudDauguen/flechettes#readme"
+}
