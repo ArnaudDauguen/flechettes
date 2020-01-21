@@ -19,7 +19,7 @@ function askNumberOfPlayers(){
         choices: [2, 3, 4, '?'],
     }).then(async (answers) => {
         nbPlayer = answers.nbPlayer
-        while(isNaN(nbPlayer)){
+        while(isNaN(nbPlayer) || nbPlayer < 2){
             nbPlayer = await prompt({
                 type: 'number',
                 name: 'nbPlayer',
@@ -55,40 +55,83 @@ function createPlayerNameQuestion(playerNumber){
 
 }
 
-function createPlayers(nbPlayer, gameMode){
+function createPlayers(nbPlayer, gameMode, game){
     let questionList = []
     for(let nb = 1; nb <= nbPlayer; nb++){
         questionList.push(createPlayerNameQuestion(nb))
     }
     return prompt(questionList)
     .then((answers) => {
-        let players = []
         for(let nb = 1; nb <= nbPlayer; nb++){
-            players.push(new Player(answers[nb], gameMode == 2 ? 301 : 0))
+            const player = new Player(answers[nb])
+            //AroundTheWorld
+            if(gameMode == 1){player.setTarget(1); player.setMaxShot(3)}
+            //301
+            if(gameMode == 2){player.setScore(301)}
+            //Cricket
+            if(gameMode == 3){player.setMaxShot(3)}
+            game.addPlayer(player)
         }
-        return players
     })
+
+}
+
+function askForShot(){
+    return prompt([
+        {
+            type: 'number',
+            name: 'sector',
+            message: 'Sector touched (0 to 20, 25)',
+        },
+        {
+            type: 'multiplicator',
+            name: 'multiplicator',
+            message: 'multiplicator touched (1 to 3)',
+        },
+    ]).then((answers) => {
+        if(answers.sector < 0) answers.sector = 0
+        else if(answers.sector > 25) answers.sector = 0
+        else if(answers.sector > 20 && answers.sector < 25) answers.sector = 0
+        if(answers.multiplicator < 1) answers.multiplicator = 1
+        else if(answers.multiplicator > 3) answers.multiplicator = 1
+        if(answers.sector == 25 && answers.multiplicator == 3) answers.multiplicator = 2
+
+        return answers
+    })
+
 }
 
 
 
-async function initGame(){
-    let nbPlayer = await askNumberOfPlayers().then((rep) => {return rep})
-    let gameMode = await askGameMode().then((rep) => {return rep})
-    const partie = gameMode == 1 ? new AroundTheWorld() : (gameMode == 2 ? new Game301() : new Cricket())
-    let players = await createPlayers(nbPlayer, gameMode).then((rep) => {return rep})
+async function play(){
+    try {
+    //init
+        let gameMode = await askGameMode().then((rep) => {return rep})
+        const game = gameMode == 1 ? new AroundTheWorld() : (gameMode == 2 ? new Game301() : new Cricket())
+        let nbPlayer = await askNumberOfPlayers().then((rep) => {return rep})
+        await createPlayers(nbPlayer, gameMode, game)
+        game.shuflePlayers()
 
 
+        //play
+        let gameResponse
+        do{
+            console.log(game.getTurnInfos())
+            
+            let shot = await askForShot()
+            gameResponse = game.handleShot(shot.sector, shot.multiplicator)
+            if(gameResponse.message)
+                console.log(`\n${gameResponse.message}`)
+        } while(gameResponse.completion == false)
+
+        console.log(`\nPartie terminée ! Victoire pour ${gameResponse.playing.getName()}`)
     
-
-    console.log(partie.getName())
-
-    console.log(players[0].getScore())
-
+        
+    } catch (error) {
+        console.log(error)
+    }
     
-    
-
 }
 
 
-initGame()
+play()

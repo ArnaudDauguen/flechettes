@@ -6,8 +6,8 @@ class Cricket extends Gamemode{
         
     }
 
-    handle(shot){
-
+    handle(secteur, multiply){
+        
     }
 
     

@@ -27,6 +27,21 @@ class Gamemode{
         this.players = Gamemode.shuffle(this.players)
     }
 
+    getTurnInfos(){
+        let rep = '\n'
+        if(this.shotSinceLastPlayerChange == 0)
+            rep += `\nC'est au tour de ${this.players[0].getName()}`
+        else if(this.shotSinceLastPlayerChange < this.players[0].getMaxShot())
+            rep += `\nEncore à ${this.players[0].getName()}`
+        if(this.players[0].getTarget() != undefined && this.players[0].getTarget() != null)
+            rep += `\nObjectif : ${this.players[0].getTarget()}`
+        if(this.players[0].getScore() != undefined && this.players[0].getScore() != null)
+            rep += `\nScore : ${this.players[0].getScore()}`
+        if(this.shotSinceLastPlayerChange >= this.players[0].getMaxShot() -1)
+            rep += `\n${this.players[1].getName()} prépare toi, tu joue après`
+        return rep
+    }
+
     getPlayerTurn(){
         return {
             completion: this.isComplete,
@@ -35,13 +50,15 @@ class Gamemode{
         }
     }
 
-    nextTurn(){
+    nextTurn(message){
         this.shotSinceLastPlayerChange++
         if(this.shotSinceLastPlayerChange >= this.players[0].getMaxShot()){
             this.addPlayer(this.players.shift())
             this.shotSinceLastPlayerChange = 0
         }
-        return this.getPlayerTurn()
+        const rep = this.getPlayerTurn()
+        if(message != null && message != undefined) rep.message = message
+        return rep
     }
 
 

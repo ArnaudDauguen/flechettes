@@ -1,5 +1,5 @@
 class Player{
-    constructor(name, score = 0, target = null, maxShot = 1){
+    constructor(name, score = null, target = null, maxShot = 1){
         this.name = name
         this.score = score
         this.target = target
