@@ -6,7 +6,8 @@ const { NotFoundError, BadRequestError, NotAcceptableError, ServerError } = requ
 router.post('/', async (req, res, next) => {
     const input = req.params
     if(input.name === undefined || input.email === undefined)
-        throw new BadRequestError()
+        return next(new BadRequestError())
+        
     const player = await Players.create([input.name, input.email])
     
     res.format({
@@ -37,6 +38,7 @@ router.get('/', async (req, res, next) => {
         },
     })
 })
+
 
 module.exports = router
 

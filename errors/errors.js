@@ -41,4 +41,4 @@ class ServerError extends HttpError {
     }
 }
 
-module.exports = { NotFoundError, BadRequestError, NotAcceptableError, ServerError }
+module.exports = { HttpError, NotFoundError, BadRequestError, NotAcceptableError, ServerError }

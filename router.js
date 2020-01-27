@@ -1,6 +1,6 @@
 const env = process.env
 const PORT = env.PORT || 3000
-const { ServerError, NotAcceptableError } = require('./errors/errors.js')
+const { HttpError, ServerError, NotAcceptableError } = require('./errors/errors.js')
 
 const express = require('express');
 const router = express();
