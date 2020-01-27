@@ -2,8 +2,8 @@ const db = require('sqlite')
 const _ = require('lodash')
 
 module.exports = {
-  findAllPlayers() {
-    return db.all("SELECT rowid AS id, * FROM player")
+  findAllPlayers(order = "rowid", limit = 10, offset = 0, desc = "ASC") {
+    return db.all(`SELECT rowid AS id, * FROM player ORDER BY ${order} ${desc} LIMIT ? OFFSET ?`, [limit, offset])
   },
   findAllPlayerIds() {
     return db.all("SELECT rowid AS id FROM player")
@@ -11,9 +11,8 @@ module.exports = {
   findOne(id) {
     return db.get("SELECT rowid AS id, * FROM player WHERE rowid = ?", id)
   },
-  async createPlayer(params) {
-    const data = _.values(params)
-    const { lastID } = await db.run("INSERT INTO player VALUES(?, ?, 0, 0, ?, date('now'))", data)
+  async create(data) {
+    const { lastID } = await db.run("INSERT INTO player VALUES(?, ?, 0, 0, date('now'))", data)
 
     return this.findOne(lastID)
   },

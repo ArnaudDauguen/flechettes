@@ -4,7 +4,6 @@
   "description": "ingesup tp darts",
   "main": "cli.js",
   "dependencies": {
-    "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "hbs": "^4.0.1",
