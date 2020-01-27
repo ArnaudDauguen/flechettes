@@ -65,11 +65,11 @@ function createPlayers(nbPlayer, gameMode, game){
         for(let nb = 1; nb <= nbPlayer; nb++){
             const player = new Player(answers[nb])
             //AroundTheWorld
-            if(gameMode == 1){player.setTarget(1); player.setMaxShot(3)}
+            if(gameMode == 1)player.setTarget(1)
             //301
-            if(gameMode == 2){player.setScore(301)}
+            if(gameMode == 2)player.setScore(301)
             //Cricket
-            if(gameMode == 3){player.setMaxShot(3)}
+            if(gameMode == 3){/*Gamemode does not exist for now*/}
             game.addPlayer(player)
         }
     })
@@ -106,9 +106,9 @@ function askForShot(){
 async function play(){
     try {
     //init
-        let gameMode = await askGameMode().then((rep) => {return rep})
+        let gameMode = await askGameMode()
         const game = gameMode == 1 ? new AroundTheWorld() : (gameMode == 2 ? new Game301() : new Cricket())
-        let nbPlayer = await askNumberOfPlayers().then((rep) => {return rep})
+        let nbPlayer = await askNumberOfPlayers()
         await createPlayers(nbPlayer, gameMode, game)
         game.shuflePlayers()
 
