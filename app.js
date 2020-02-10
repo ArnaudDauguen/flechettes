@@ -9,6 +9,7 @@ db.open('api.db').then(() => {
     db.run("CREATE TABLE IF NOT EXISTS game (mode, name, currentPlayerId, status, createdAt)"),
     db.run("CREATE TABLE IF NOT EXISTS player (name, email, gameWin, gameLost, createdAt)"),
     db.run("CREATE TABLE IF NOT EXISTS gameShot (gameId, playerId, sector, multiplicator, createdAt)"),
+    db.run("CREATE TABLE IF NOT EXISTS gamePlayer (gameId, playerId)"),
   ]).then(() => {
     console.log('Databases are ready')
   }).catch((err) => {

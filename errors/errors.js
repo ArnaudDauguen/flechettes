@@ -41,6 +41,14 @@ class NotApiAvailableError extends HttpError {
     }
 }
   
+class PlayerNotDeletableError extends HttpError {
+    constructor(message = 'Player Not Deletable', type = 'PLAYER_NOT_DELETABLE') {
+        super(message)
+        this.status = 410
+        this.type = type
+    }
+}
+  
 class ServerError extends HttpError {
     constructor(message = 'Server Error', type = 'SERVER_ERROR') {
         super(message)
@@ -49,4 +57,4 @@ class ServerError extends HttpError {
     }
 }
 
-module.exports = { HttpError, NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, ServerError }
+module.exports = { HttpError, NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, PlayerNotDeletableError, ServerError }
