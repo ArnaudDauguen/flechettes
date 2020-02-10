@@ -33,6 +33,14 @@ class NotAcceptableError extends HttpError {
     }
 }
   
+class NotApiAvailableError extends HttpError {
+    constructor(message = 'Not Api Available', type = 'NOT_API_AVAILABLE') {
+        super(message)
+        this.status = 406
+        this.type = type
+    }
+}
+  
 class ServerError extends HttpError {
     constructor(message = 'Server Error', type = 'SERVER_ERROR') {
         super(message)
@@ -41,4 +49,4 @@ class ServerError extends HttpError {
     }
 }
 
-module.exports = { HttpError, NotFoundError, BadRequestError, NotAcceptableError, ServerError }
+module.exports = { HttpError, NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, ServerError }

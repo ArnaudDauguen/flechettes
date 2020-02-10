@@ -1,6 +1,63 @@
 const router = require('express')();
 const Players = require('./../models/players');
-const { NotFoundError, BadRequestError, NotAcceptableError, ServerError } = require('./../errors/errors.js')
+const { NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, ServerError } = require('./../errors/errors.js')
+
+
+router.get('/:id/edit', async (req, res, next) => {
+    const id = req.params.id
+    if(id % 1 !== 0)
+        return next(new BadRequestError())
+        
+    const player = await Players.findOne(id)
+    if(player === null || player === undefined)
+        return next(new NotFoundError())
+    
+    res.format({
+        html: function(){
+            //TODO res.render
+            res.send(200)
+        },
+        json: function(){
+            throw new NotApiAvailableError()
+        },
+    })
+    
+})
+
+
+router.get('/:id', async (req, res, next) => {
+    const id = req.params.id
+    if(id % 1 !== 0)
+        return next(new BadRequestError())
+        
+    const player = await Players.findOne(id)
+    if(player === null || player === undefined)
+        return next(new NotFoundError())
+    
+    res.format({
+        html: function(){
+            res.redirect(301, `/players/${player.id}/edit`)
+        },
+        json: function(){
+            res.status(201).send(player)
+        },
+    })
+    
+})
+
+
+router.get('/new', (req, res, next) => {
+    res.format({
+        html: function(){
+            //TODO res.render
+            res.send(200)
+        },
+        json: function(){
+            throw new NotApiAvailableError()
+        },
+    })
+    
+})
 
 
 router.post('/', async (req, res, next) => {
@@ -31,7 +88,8 @@ router.get('/', async (req, res, next) => {
     
     res.format({
         html: function(){
-            //res.render
+            //TODO res.render
+            res.send(200)
         },
         json: function(){
             res.send(players)

@@ -1,6 +1,6 @@
 const env = process.env
 const PORT = env.PORT || 3000
-const { HttpError, ServerError, NotAcceptableError } = require('./errors/errors.js')
+const { HttpError, ServerError, NotAcceptableError, NotApiAvailableError } = require('./errors/errors.js')
 
 const express = require('express');
 const router = express();
@@ -44,7 +44,7 @@ app.get('/', (req, res, next) => {
             res.redirect(301, "/games")
         },
         json: function () {
-            throw new NotAcceptableError()
+            throw new NotApiAvailableError()
         },
     })
 })
