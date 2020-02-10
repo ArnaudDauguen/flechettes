@@ -3,6 +3,58 @@ const Games = require('./../models/games')
 const { NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, PlayerNotDeletableError, ServerError , CantCreateUserError} = require('./../errors/errors.js')
 
 
+router.get('/:id/edit', async (req, res, next) => {
+    const id = req.params.id
+    if (id % 1 !== 0)
+        return next(new BadRequestError())
+
+    const game = await Games.findOne(id)
+    if (game === null || game === undefined)
+        return next(new NotFoundError())
+    
+    game.players = await Games.getPlayersByGameId(id)
+    game.shots = await Games.getShotsByGameId(id, 5)
+
+    res.format({
+        html: function () {
+            //TODO res.render
+            res.send(200)
+        },
+        json: function () {
+            throw new NotApiAvailableError()
+        },
+    })
+
+})
+
+
+router.get('/:id', async (req, res, next) => {
+    const id = req.params.id
+    const include = req.query.include == "gamePlayers"
+    if (id % 1 !== 0)
+        return next(new BadRequestError())
+
+    const game = await Games.findOne(id)
+    if (game === null || game === undefined)
+        return next(new NotFoundError())
+
+    if(include)
+        game.players = await Games.getPlayersByGameId(id)
+    game.shots = await Games.getShotsByGameId(id, 5)
+
+    res.format({
+        html: function () {
+            //TODO res.render
+            res.send(200)
+        },
+        json: function () {
+            res.status(201).send(game)
+        },
+    })
+
+})
+
+
 router.get('/new', (req, res, next) => {
     res.format({
         html: function () {

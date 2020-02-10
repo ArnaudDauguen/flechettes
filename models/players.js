@@ -40,9 +40,9 @@ module.exports = {
     getNumberOfStartedGameByPlayerId(id) {
         return db.get("SELECT COUNT(rowid) AS 'nb' FROM game WHERE status IN ('started', 'ended') AND rowid IN (SELECT gameId FROM gamePlayer WHERE playerId = ?)", id)
     },
-    getNumberOfTimeUsingEmail(email){
-        return db.get("SELECT COUNT(rowid) AS 'nb' FROM player WHERE email = ?", email)
-    }
+    getNumberOfTimeUsingEmail(email, limit = 5){
+        return db.get("SELECT COUNT(rowid) AS 'nb' FROM player WHERE email = ? LIMIT ?", [email, limit])
+    },
 }
 
 
