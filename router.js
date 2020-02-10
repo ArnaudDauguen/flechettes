@@ -37,19 +37,31 @@ app.use('/games', require('./routers/games.js'))
 //     })
 // })
 
+app.get('/', (req, res, next) => {
+
+    res.format({
+        html: function () {
+            res.redirect(301, "/games")
+        },
+        json: function () {
+            throw new NotAcceptableError()
+        },
+    })
+})
+
 // Error Middleware
 //TODO
-app.use((error, req, res, next) => {  
+app.use((error, req, res, next) => {
     if (!(error instanceof HttpError)) {
-      console.error(error)
-      error = new ServerError()
+        console.error(error)
+        error = new ServerError()
     }
-    
+
     res.format({
         html: () => {
-          res.render("error", {
-            error: error
-          })
+            res.render("error", {
+                error: error
+            })
         },
         json: () => {
             res.status(error.status || 500).json({ error })
