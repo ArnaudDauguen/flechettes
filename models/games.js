@@ -3,9 +3,12 @@ const db = require('sqlite')
 const _ = require('lodash')
 
 module.exports = {
-  findAllGames() {
-    return db.all("SELECT rowid AS id, * FROM game")
-  },
+    findAll(order = "rowid", limit = 10, offset = 0, desc = "ASC", gameStatus) {
+        let where = ""
+        if(gameStatus !== undefined && gameStatus !== null)
+            where = `WHERE status = '${gameStatus}' `
+        return db.all(`SELECT rowid AS id, * FROM game ${where}ORDER BY ${order} ${desc} LIMIT ? OFFSET ?`, [limit, offset])
+    },
   findAllGameIds() {
     return db.all("SELECT rowid AS id FROM game")
   },

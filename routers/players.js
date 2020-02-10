@@ -143,7 +143,7 @@ router.post('/', async (req, res, next) => {
 router.get('/', async (req, res, next) => {
     let limit = (!isNaN(req.query.limit) && req.query.limit >= 0 && req.query.limit <= 20) ? req.query.limit : 10
     let offset = (!isNaN(req.query.page) && req.query.page >= 1) ? (req.query.page - 1) * limit : 0
-    let order = ["name", "email", "gameWin", "gameLost"].indexOf(req.query.order) >= 0 ? req.query.order : "rowid"
+    let order = ["name", "email", "gameWin", "gameLost"].indexOf(req.query.sort) >= 0 ? req.query.sort : "rowid"
     let reverse = req.query.reverse !== undefined ? "DESC" : "ASC"
 
     const players = await Players.findAllPlayers(order, limit, offset, reverse)
