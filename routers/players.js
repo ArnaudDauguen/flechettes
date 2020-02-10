@@ -1,6 +1,6 @@
 const router = require('express')()
 const Players = require('./../models/players')
-const { NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, PlayerNotDeletableError, ServerError } = require('./../errors/errors.js')
+const { NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, PlayerNotDeletableError, ServerError , CantCreateUserError} = require('./../errors/errors.js')
 
 
 router.delete('/:id', async (req, res, next) => {
@@ -122,6 +122,10 @@ router.post('/', async (req, res, next) => {
     const input = req.body
     if (input.name === undefined || input.email === undefined)
         return next(new BadRequestError())
+
+    const nbEmailInUse = Players.getNumberOfTimeUsingEmail(email)
+    if(nbEmailInUse.nb % 1 !== 0 )
+        return next(new CantCreateUserError())
 
     const player = await Players.create([input.name, input.email])
 

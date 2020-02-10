@@ -25,6 +25,14 @@ class BadRequestError extends HttpError {
     }
 }
   
+class CantCreateUserError extends HttpError {
+    constructor(message = 'cant create user, Email already in use', type = 'CANT_CREATE_USER') {
+        super(message)
+        this.status = 409
+        this.type = type
+    }
+}
+  
 class NotAcceptableError extends HttpError {
     constructor(message = 'Not Acceptable', type = 'NOT_ACCEPTABLE') {
         super(message)
@@ -57,4 +65,4 @@ class ServerError extends HttpError {
     }
 }
 
-module.exports = { HttpError, NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, PlayerNotDeletableError, ServerError }
+module.exports = { HttpError, NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, PlayerNotDeletableError, ServerError, CantCreateUserError }
