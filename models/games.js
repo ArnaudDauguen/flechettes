@@ -15,13 +15,13 @@ module.exports = {
     findOne(id) {
         return db.get("SELECT rowid AS id, * FROM game WHERE rowid = ?", id)
     },
-    async createGame(params) {
+    async create(params) {
         const data = _.values(params)
-        const { lastID } = await db.run("INSERT INTO game VALUES(?, ?, 0, 0, ?, date('now'))", data)
+        const { lastID } = await db.run("INSERT INTO game VALUES(?, ?, -1, 'draft', date('now'))", data)
 
         return this.findOne(lastID)
     },
-    deleteGame(id) {
+    delete(id) {
         return db.run("DELETE FROM game WHERE rowid = ?", id)
     },
     async updateGame(params) {
@@ -33,18 +33,23 @@ module.exports = {
             }
         }
 
+        //remove last ','
+        string = string.slice(0, -1)
+
         const data = _.values(params)
         const { changes } = await db.run("UPDATE game SET " + string + " WHERE rowid = ?", data)
 
         return this.findOne(params.id)
     },
     getPlayersByGameId(id){
-        
         return db.all(`SELECT rowid AS id, * FROM player WHERE rowid IN (SELECT playerId FROM gamePlayer WHERE gameId = ${id})`) //je sais pas pk l'id veux pas passer en param comme d'hab...
+    },
+    getNbPlayersByGameId(id){
+        return db.get(`SELECT COUNT(rowid) AS nb FROM player WHERE rowid IN (SELECT playerId FROM gamePlayer WHERE gameId = ${id})`)
     },
     getShotsByGameId(id){
         return db.all(`SELECT rowid AS id, * FROM gameShot WHERE gameId = ${id}`)
-    }
+    },
 }
 
 

@@ -57,6 +57,30 @@ class PlayerNotDeletableError extends HttpError {
     }
 }
   
+class GameNotEditableError extends HttpError {
+    constructor(message = 'Cant edit, game already started or finished', type = 'GAME_NOT_EDITABLE') {
+        super(message)
+        this.status = 410
+        this.type = type
+    }
+}
+  
+class GameNotStartableError extends HttpError {
+    constructor(message = 'Cant start, game already started or finished', type = 'GAME_NOT_STARTABLE') {
+        super(message)
+        this.status = 422
+        this.type = type
+    }
+}
+  
+class GamePlayerMissingError extends HttpError {
+    constructor(message = 'Cant start, no players in game', type = 'GAME_PLAYER_MISSING') {
+        super(message)
+        this.status = 422
+        this.type = type
+    }
+}
+  
 class ServerError extends HttpError {
     constructor(message = 'Server Error', type = 'SERVER_ERROR') {
         super(message)
@@ -65,4 +89,4 @@ class ServerError extends HttpError {
     }
 }
 
-module.exports = { HttpError, NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, PlayerNotDeletableError, ServerError, CantCreateUserError }
+module.exports = { HttpError, NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, PlayerNotDeletableError, ServerError, CantCreateUserError, GameNotEditableError, GameNotStartableError, GamePlayerMissingError }
