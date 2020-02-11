@@ -53,7 +53,7 @@ app.get('/', (req, res, next) => {
 //TODO
 app.use((error, req, res, next) => {
     if (!(error instanceof HttpError)) {
-        console.error(error)
+        console.error("API ERROR", error)
         error = new ServerError()
     }
 

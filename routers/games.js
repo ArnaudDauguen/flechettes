@@ -1,7 +1,148 @@
 const router = require('express')()
 const Games = require('./../models/games')
-const { NotFoundError, BadRequestError, NotAcceptableError, NotApiAvailableError, ServerError, GameNotEditableError, GameNotStartableError, GamePlayerMissingError} = require('./../errors/errors.js')
+const Players = require('./../models/players')
+const { NotFoundError, BadRequestError, PlayersNotAddableError, PlayerNotDeletableError, NotApiAvailableError, GameNotEditableError, GameNotStartableError, GamePlayerMissingError, CantCreateUserError} = require('./../errors/errors.js')
 
+
+router.delete('/:id/players', async (req, res, next) => {
+    const id = req.params.id
+    const playerIds = req.query.id
+    if (id % 1 !== 0)
+        return next(new BadRequestError())
+    if (playerIds === undefined || playerIds === null)
+        return next(new BadRequestError())
+        
+    
+    const game = await Games.findOne(id)
+    if (game === null || game === undefined)
+        return next(new NotFoundError())
+    
+    if(game.status !== "draft")
+        return next(new PlayerNotDeletableError())
+
+    
+    //foreact qui marche sur id ou [id]
+    for(pId of playerIds){
+        if(pId % 1 !== 0)
+            return next(new BadRequestError())
+    }
+
+    await Games.removePlayersForGame(id, playerIds)
+
+    res.format({
+        html: function () {
+            res.redirect(301, `/games/${id}/players`)
+        },
+        json: function () {
+            res.status(204).send()
+        },
+    })
+
+})
+
+
+router.post('/:id/players', async (req, res, next) => {
+    const id = req.params.id
+    if (id % 1 !== 0)
+        return next(new BadRequestError())
+
+    const input = req.body
+    if(input.players === undefined || input.players === null)
+        return next(new BadRequestError())
+        
+    const game = await Games.findOne(id)
+    if (game === null || game === undefined)
+        return next(new NotFoundError())
+
+    if(game.status !== "draft")
+        return next(new PlayersNotAddableError())
+
+    // Update userList for traitment (remove users already playing)
+    const existingPlayer = await Games.getPlayersByGameId(id)
+    const existingPlayerIds = existingPlayer.map((item) => item.id)
+    input.players = input.players.filter((item) => existingPlayerIds.indexOf(item) === -1)
+
+
+    let playerIds = []
+    for (let item of input.players){
+        // IMPORT PLAYER
+        if(item % 1 === 0){
+            const player = await Players.findOne(item)
+            if(player === undefined || player === null)
+                return next(new NotFoundError())
+            playerIds.push(item)
+        }else{
+            // BONUS IN USE
+            // CREATE NEW PLAYER
+            if (item.name === undefined || item.name === null || item.email === undefined || item.email === null)
+                return next(new BadRequestError())
+
+            let nbEmailInUse = await Players.getNumberOfTimeUsingEmail(item.email)
+            if(nbEmailInUse.nb !== 0 )
+                return next(new CantCreateUserError())
+
+            const player = await Players.create([item.name, item.email])
+            playerIds.push(player.id)
+        }
+    }
+    await Games.addPlayersForGameId(id, playerIds)
+
+    res.format({
+        html: function () {
+            res.redirect(301, `/games/${id}/players`)
+        },
+        json: function () {
+            res.status(204).send()
+        },
+    })
+
+})
+
+
+router.get('/:id/players', async (req, res, next) => {
+    const id = req.params.id
+    if (id % 1 !== 0)
+        return next(new BadRequestError())
+        
+    const game = await Games.findOne(id)
+    if (game === null || game === undefined)
+        return next(new NotFoundError())
+
+    const players = await Games.getPlayersByGameId(id)
+
+    res.format({
+        html: function () {
+            //TODO qqchose
+        },
+        json: function () {
+            res.status(201).send(players)
+        },
+    })
+
+})
+
+
+router.delete('/:id', async (req, res, next) => {
+    const id = req.params.id
+    if (id % 1 !== 0)
+        return next(new BadRequestError())
+        
+    const game = await Games.findOne(id)
+    if (game === null || game === undefined)
+        return next(new NotFoundError())
+
+    await Games.delete(id)
+
+    res.format({
+        html: function () {
+            res.redirect(301, "/games/")
+        },
+        json: function () {
+            res.status(204).send()
+        },
+    })
+
+})
 
 
 router.patch('/:id', async (req, res, next) => {
@@ -157,7 +298,7 @@ router.get('/', async (req, res, next) => {
             res.send(200)
         },
         json: function () {
-            res.send(games)
+            res.status(201).send(games)
         },
     })
 })

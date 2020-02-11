@@ -21,7 +21,8 @@ module.exports = {
 
         return this.findOne(lastID)
     },
-    delete(id) {
+    async delete(id) {
+        await db.run("DELETE FROM gamePlayer WHERE gameId = ?", id)
         return db.run("DELETE FROM game WHERE rowid = ?", id)
     },
     async updateGame(params) {
@@ -49,6 +50,27 @@ module.exports = {
     },
     getShotsByGameId(id){
         return db.all(`SELECT rowid AS id, * FROM gameShot WHERE gameId = ${id}`)
+    },
+    async addPlayersForGameId(id, playerIds){
+        let string = ""
+        for(pId of playerIds){
+            string += `(${id}, ${pId}),`
+        }
+        string = string.slice(0, -1)
+        console.log(string)
+        db.run(`INSERT INTO gamePlayer (gameId, playerId) VALUES ${string}`)
+        return //pas de retour attendu
+    },
+    async removePlayersForGame(gameId, playerIds){
+        let string = "("
+        for(playerId of playerIds){
+            string += `${playerId}, `
+        }
+        string = string.slice(0, -2)
+        string += ")"
+        console.log(gameId, string)
+        await db.run(`DELETE FROM gamePlayer WHERE gameId = ${gameId} AND playerId IN ${string}`)
+        return
     },
 }
 

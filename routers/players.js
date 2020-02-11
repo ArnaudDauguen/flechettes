@@ -124,7 +124,7 @@ router.post('/', async (req, res, next) => {
         return next(new BadRequestError())
 
     const nbEmailInUse = Players.getNumberOfTimeUsingEmail(email)
-    if(nbEmailInUse.nb % 1 !== 0 )
+    if(nbEmailInUse.nb !== 0 )
         return next(new CantCreateUserError())
 
     const player = await Players.create([input.name, input.email])
@@ -154,7 +154,7 @@ router.get('/', async (req, res, next) => {
             res.send(200)
         },
         json: function () {
-            res.send(players)
+            res.status(201).send(players)
         },
     })
 })
