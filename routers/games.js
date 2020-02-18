@@ -1,7 +1,54 @@
 const router = require('express')()
 const Games = require('./../models/games')
 const Players = require('./../models/players')
-const { NotFoundError, BadRequestError, PlayersNotAddableError, PlayerNotDeletableError, NotApiAvailableError, GameNotEditableError, GameNotStartableError, GamePlayerMissingError, CantCreateUserError} = require('./../errors/errors.js')
+const GameShots = require('./../models/shots')
+const { NotFoundError, 
+    BadRequestError, 
+    PlayersNotAddableError, 
+    PlayerNotDeletableError, 
+    NotApiAvailableError, 
+    GameNotEditableError, 
+    GameNotStartableError, 
+    GamePlayerMissingError, 
+    CantCreateUserError,
+    GameEndedError,
+    GameNotStartedError,
+    CantCreateShotError
+} = require('./../errors/errors.js')
+
+
+router.post('/:id/shots'), async (req, res, next) => {
+    const id = req.params.id
+    const sector = req.body.sector
+    const multiplicator = req.body.multiplicator
+    if (id % 1 !== 0)
+        return next(new BadRequestError())
+    if (sector === undefined || sector === null || multiplicator === undefined || multiplicator === null)
+        return next(new BadRequestError())
+    
+    const game = await Games.findOne(id)
+    if (game === null || game === undefined)
+        return next(new NotFoundError())
+
+    if(game.status !== "draft")
+        return next(new GameNotStartedError())
+    if(game.status !== "ended")
+        return next(new GameEndedError())
+
+    const shot = await GameShots.addShot(id, game.currentPlayerId || -1, sector, multiplicator)
+    if(shot === null || shot === undefined)
+        return next(new CantCreateShotError())
+    
+
+    res.format({
+        html: function () {
+            res.redirect(301, `/games/${id}`)
+        },
+        json: function () {
+            res.status(204).send()
+        },
+    })
+}
 
 
 router.delete('/:id/players', async (req, res, next) => {

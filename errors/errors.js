@@ -33,6 +33,14 @@ class CantCreateUserError extends HttpError {
     }
 }
   
+class CantCreateShotError extends HttpError {
+    constructor(message = 'cant save shot', type = 'CANT_CREATE_SHOT') {
+        super(message)
+        this.status = 409
+        this.type = type
+    }
+}
+  
 class NotAcceptableError extends HttpError {
     constructor(message = 'Not Acceptable', type = 'NOT_ACCEPTABLE') {
         super(message)
@@ -97,6 +105,22 @@ class PlayersNotDeletableError extends HttpError {
     }
 }
 
+class GameNotStartedError extends HttpError {
+    constructor(message = 'Cant do, game not started', type = 'GAME_NOT_STARTED') {
+        super(message)
+        this.status = 422
+        this.type = type
+    }
+}
+
+class GameEndedError extends HttpError {
+    constructor(message = 'cant do, game ended', type = 'GAME_ENDED') {
+        super(message)
+        this.status = 422
+        this.type = type
+    }
+}
+
 class ServerError extends HttpError {
     constructor(message = 'Server Error', type = 'SERVER_ERROR') {
         super(message)
@@ -117,5 +141,8 @@ module.exports = { HttpError,
     GameNotStartableError, 
     GamePlayerMissingError,
     PlayersNotAddableError,
-    PlayerNotDeletableError
+    PlayerNotDeletableError,
+    GameNotStartedError,
+    GameEndedError,
+    CantCreateShotError
 }

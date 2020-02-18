@@ -20,5 +20,3 @@ db.open('api.db').then(() => {
 
 
 require('./router.js')
-
-/* COPYRIGHT © 2020 ARNAUD DAUGUEN - ALL RIGHTS RESERVED */

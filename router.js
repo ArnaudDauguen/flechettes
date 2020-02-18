@@ -22,20 +22,27 @@ app.use('/players', require('./routers/players.js'))
 app.use('/games', require('./routers/games.js'))
 
 //TODO return static files
-// app.get('*', (req, res, next) => {
-//     res.redirect(301, '/games')
-// })
+app.use(express.static('./assets'))
+app.get('/styles/main.css', (req, res, next) => {
+    res.sendFile('styles/main.css')
+})
+app.get('/favicon.ico', (req, res, next) => {
+    res.sendFile('favicon.ico')
+})
+app.get('/images/logo.png', (req, res, next) => {
+    res.sendFile('images/logo.png')
+})
 
-// app.all('/', (req, res, next) => {
-//     res.format({
-//         html: function(){
-//             res.redirect(301, '/games')
-//         },
-//         json: function(){
-//             throw new NotAcceptableError()
-//         },
-//     })
-// })
+app.all('/', (req, res, next) => {
+    res.format({
+        html: function(){
+            res.redirect(301, '/games')
+        },
+        json: function(){
+            throw new NotAcceptableError()
+        },
+    })
+})
 
 app.get('/', (req, res, next) => {
 

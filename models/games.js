@@ -74,5 +74,3 @@ module.exports = {
     },
 }
 
-
-/* COPYRIGHT © 2020 ARNAUD DAUGUEN - ALL RIGHTS RESERVED */
