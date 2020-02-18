@@ -33,25 +33,15 @@ app.get('/images/logo.png', (req, res, next) => {
     res.sendFile('images/logo.png')
 })
 
-app.all('/', (req, res, next) => {
+
+//force redirect if road not defined
+app.use((req, res, next) => {
     res.format({
         html: function(){
             res.redirect(301, '/games')
         },
         json: function(){
             throw new NotAcceptableError()
-        },
-    })
-})
-
-app.get('/', (req, res, next) => {
-
-    res.format({
-        html: function () {
-            res.redirect(301, "/games")
-        },
-        json: function () {
-            throw new NotApiAvailableError()
         },
     })
 })

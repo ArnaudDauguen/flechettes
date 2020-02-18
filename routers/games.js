@@ -269,6 +269,19 @@ router.get('/:id/edit', async (req, res, next) => {
 })
 
 
+router.get('/new', (req, res, next) => {
+    res.format({
+        html: function () {
+            res.render("form_game", {})
+        },
+        json: function () {
+            throw new NotApiAvailableError()
+        },
+    })
+
+})
+
+
 router.get('/:id', async (req, res, next) => {
     const id = req.params.id
     const include = req.query.include == "gamePlayers"
@@ -285,8 +298,13 @@ router.get('/:id', async (req, res, next) => {
 
     res.format({
         html: function () {
-            //TODO res.render
-            res.send(200)
+            let content = ""
+            
+            res.render("show", {
+                title: `Game ${id} infos`,
+                h1Title: `Game ${id}`,
+                content: content,
+            })
         },
         json: function () {
             res.status(201).send(game)
@@ -296,22 +314,7 @@ router.get('/:id', async (req, res, next) => {
 })
 
 
-router.get('/new', (req, res, next) => {
-    res.format({
-        html: function () {
-            //TODO res.render
-            res.send(200)
-        },
-        json: function () {
-            throw new NotApiAvailableError()
-        },
-    })
-
-})
-
-
 router.post('/', async (req, res, next) => {
-    const input = req.body
     if (input.name === undefined || input.mode === null || input.mode === undefined || input.mode === null)
         return next(new BadRequestError())
     if (["around-the-world", "301", "cricket"].indexOf(input.mode) === -1)
@@ -341,8 +344,23 @@ router.get('/', async (req, res, next) => {
 
     res.format({
         html: function () {
-            //TODO res.render
-            res.send(200)
+            let content = '<table class="table"><tr><th>game id</th><th>gamemode</th><th>name</th><th>current player</th><th>game status</th><th>creation date</th></tr>'
+            //TODO convert plaerId to playerName
+            games.forEach((game => {
+                content = `${content}<tr><td>${game.id}</td><td>${game.mode}</td><td>${game.name}</td><td>${game.currentPlayerId}</td><td>${game.status}</td><td>${game.createdAt}</td>`
+                content = `${content}<td><form action="/games/${game.id}/?_method=GET", method="GET"> <button type="submit" class="btn btn-success"><i class="fa fa-pencil fa-lg mr-2"></i>See</button> </form> </td>`
+                content = `${content}<td><form action="/games/${game.id}/?_method=DELETE", method="POST"> <button type="submit" class="btn btn-danger"><i class="fa fa-pencil fa-lg mr-2"></i>Delete</button> </form> </td>`
+                content = `${content}</tr>`
+            }))
+            content = `${content}</table>`
+            content = `${content}<form action="/players/?_method=GET", method="GET"> <button type="submit" class="btn btn-succes"><i class="fa fa-pencil fa-lg mr-2"></i>ManagePlayers</button> </form> </td>`
+            content = `${content}<form action="/games/new?_method=GET", method="GET"> <button type="submit" class="btn btn-succes"><i class="fa fa-pencil fa-lg mr-2"></i>New game</button> </form> </td>`
+            
+            res.render("show", {
+                title: "game list",
+                h1Title: "Game list",
+                content: content,
+            })
         },
         json: function () {
             res.status(201).send(games)
