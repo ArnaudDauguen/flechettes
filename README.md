@@ -4,7 +4,15 @@
 ```
 git clone git@github.com:ArnaudDauguen/flechettes.git
 cd flechettes/
-git checkout engine
 npm install
-npm run cli
 ```
+
+## Launchers
+* launch engine in CLI mode
+    ```
+    npm run cli
+    ```
+* launch engine in HTML mode
+    ```
+    npm run api
+    ```
