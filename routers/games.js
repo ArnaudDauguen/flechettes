@@ -68,7 +68,11 @@ router.delete('/:id/players', async (req, res, next) => {
         return next(new PlayerNotDeletableError())
 
     
-    //foreact qui marche sur id ou [id]
+    //foreach qui marche sur id ou [id] -> pas du tout
+    //  if id
+    //     check all char one by one if Number
+    // if [id]
+    //     check all id of [id] one by one if Number
     for(pId of playerIds){
         if(pId % 1 !== 0)
             return next(new BadRequestError())
@@ -296,6 +300,7 @@ router.get('/:id', async (req, res, next) => {
         game.players = await Games.getPlayersByGameId(id)
     game.shots = await Games.getShotsByGameId(id, 5)
 
+    console.log(game)
     res.format({
         html: function () {
             let content = ""
@@ -315,6 +320,7 @@ router.get('/:id', async (req, res, next) => {
 
 
 router.post('/', async (req, res, next) => {
+    const input = req.body
     if (input.name === undefined || input.mode === null || input.mode === undefined || input.mode === null)
         return next(new BadRequestError())
     if (["around-the-world", "301", "cricket"].indexOf(input.mode) === -1)
@@ -337,7 +343,7 @@ router.get('/', async (req, res, next) => {
     let limit = (!isNaN(req.query.limit) && req.query.limit >= 0 && req.query.limit <= 20) ? req.query.limit : 10
     let offset = (!isNaN(req.query.page) && req.query.page >= 1) ? (req.query.page - 1) * limit : 0
     let order = ["name", "status"].indexOf(req.query.sort) >= 0 ? req.query.sort : "rowid"
-    let gameStatus = ["draft", "started", "ended"].indexOf(req.query['f.status']) >= 0 ? req.query['f.status'] : "draft"
+    let gameStatus = ["draft", "started", "ended"].indexOf(req.query['f.status']) >= 0 ? req.query['f.status'] : null
     let reverse = req.query.reverse !== undefined ? "DESC" : "ASC"
 
     const games = await Games.findAll(order, limit, offset, reverse, gameStatus)
@@ -347,7 +353,7 @@ router.get('/', async (req, res, next) => {
             let content = '<table class="table"><tr><th>game id</th><th>gamemode</th><th>name</th><th>current player</th><th>game status</th><th>creation date</th></tr>'
             //TODO convert plaerId to playerName
             games.forEach((game => {
-                content = `${content}<tr><td>${game.id}</td><td>${game.mode}</td><td>${game.name}</td><td>${game.currentPlayerId}</td><td>${game.status}</td><td>${game.createdAt}</td>`
+                content = `${content}<tr><td>${game.id}</td><td>${game.mode}</td><td>${game.name}</td><td>${game.currentPlayerId == -1 ? "" : game.currentPlayerId}</td><td>${game.status}</td><td>${game.createdAt}</td>`
                 content = `${content}<td><form action="/games/${game.id}/?_method=GET", method="GET"> <button type="submit" class="btn btn-success"><i class="fa fa-pencil fa-lg mr-2"></i>See</button> </form> </td>`
                 content = `${content}<td><form action="/games/${game.id}/?_method=DELETE", method="POST"> <button type="submit" class="btn btn-danger"><i class="fa fa-pencil fa-lg mr-2"></i>Delete</button> </form> </td>`
                 content = `${content}</tr>`

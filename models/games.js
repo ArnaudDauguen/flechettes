@@ -57,18 +57,21 @@ module.exports = {
             string += `(${id}, ${pId}),`
         }
         string = string.slice(0, -1)
-        console.log(string)
-        db.run(`INSERT INTO gamePlayer (gameId, playerId) VALUES ${string}`)
+        await db.run(`INSERT INTO gamePlayer (gameId, playerId) VALUES ${string}`)
         return //pas de retour attendu
     },
     async removePlayersForGame(gameId, playerIds){
         let string = "("
-        for(playerId of playerIds){
-            string += `${playerId}, `
+        if(playerIds % 1 === 0){// can't foreach on single id outside an array
+            string = `${string}${playerIds})`
+        }else{
+            for(playerId of playerIds){
+                string += `${playerId}, `
+            }
+            string = string.slice(0, -2)
+            string += ")"
         }
-        string = string.slice(0, -2)
-        string += ")"
-        console.log(gameId, string)
+        
         await db.run(`DELETE FROM gamePlayer WHERE gameId = ${gameId} AND playerId IN ${string}`)
         return
     },

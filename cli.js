@@ -37,7 +37,7 @@ function askGameMode(){
     return prompt({
         type: 'list',
         name: 'gameMode',
-        message: 'How many players',
+        message: 'Which gamemode',
         choices: ['1. Le tour du monde', '2. le 301', '3. Le cricket'],
     }).then((answers) => {
         return answers.gameMode.slice(0,1)
