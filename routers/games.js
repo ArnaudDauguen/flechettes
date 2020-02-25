@@ -21,9 +21,12 @@ router.post('/:id/shots'), async (req, res, next) => {
     const id = req.params.id
     const sector = req.body.sector
     const multiplicator = req.body.multiplicator
+    console.log(req.body)
     if (id % 1 !== 0)
         return next(new BadRequestError())
     if (sector === undefined || sector === null || multiplicator === undefined || multiplicator === null)
+        return next(new BadRequestError())
+    if (sector <= 0 || (sector > 20 && sector < 25) || sector > 25 || multiplicator <= 0 || multiplicator > 3)
         return next(new BadRequestError())
     
     const game = await Games.findOne(id)
@@ -35,7 +38,9 @@ router.post('/:id/shots'), async (req, res, next) => {
     if(game.status !== "ended")
         return next(new GameEndedError())
 
+    console.log(req.body)
     const shot = await GameShots.addShot(id, game.currentPlayerId || -1, sector, multiplicator)
+    console.log(shot)
     if(shot === null || shot === undefined)
         return next(new CantCreateShotError())
     
@@ -295,20 +300,21 @@ router.get('/:id', async (req, res, next) => {
     const game = await Games.findOne(id)
     if (game === null || game === undefined)
         return next(new NotFoundError())
+    game.buttonDisabled = !(game.status === "draft")
 
-    if(include)
+    if(include){
         game.players = await Games.getPlayersByGameId(id)
+        game.players.forEach(x => x.removeString = `/games/${game.id}/players/${x.id}?_method=DELETE`)
+    }
     game.shots = await Games.getShotsByGameId(id, 5)
 
     console.log(game)
     res.format({
         html: function () {
-            let content = ""
-            
-            res.render("show", {
+            res.render("show_game", {
                 title: `Game ${id} infos`,
                 h1Title: `Game ${id}`,
-                content: content,
+                game: game,
             })
         },
         json: function () {
@@ -354,8 +360,8 @@ router.get('/', async (req, res, next) => {
             //TODO convert plaerId to playerName
             games.forEach((game => {
                 content = `${content}<tr><td>${game.id}</td><td>${game.mode}</td><td>${game.name}</td><td>${game.currentPlayerId == -1 ? "" : game.currentPlayerId}</td><td>${game.status}</td><td>${game.createdAt}</td>`
-                content = `${content}<td><form action="/games/${game.id}/?_method=GET", method="GET"> <button type="submit" class="btn btn-success"><i class="fa fa-pencil fa-lg mr-2"></i>See</button> </form> </td>`
-                content = `${content}<td><form action="/games/${game.id}/?_method=DELETE", method="POST"> <button type="submit" class="btn btn-danger"><i class="fa fa-pencil fa-lg mr-2"></i>Delete</button> </form> </td>`
+                content = `${content}<td><form action="/games/${game.id}/?_method=GET", method="GET"> <button type="submit" class="btn btn-success"><i class="fa fa-pencil fa-lg mr-2"></i>See</button> <input type="hidden" id="include" name="include" value="gamePlayers"> </form> </td>`
+                content = `${content}<td><form action="/games/${game.id}/?_method=DELETE", method="POST"> <button type="submit" class="btn btn-danger">Delete</button> </form> </td>`
                 content = `${content}</tr>`
             }))
             content = `${content}</table>`

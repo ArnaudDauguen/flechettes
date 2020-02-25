@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">  
+<head>
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+
+    <div class="container text-center mt-4">
+        <h1>{{h1Title}}</h1>
+        <div class="container text-center mt-5">
+            <a href="/games/{{game.id}}/edit"><button class="btn btn-info">Edit game</button></a>
+        </div>
+        <div class="container text-center mt-5">
+            <table class="table">
+                <tr>
+                    <td>Gamemode</td>
+                    <td>Game name</td>
+                    <td>Current Player</td>
+                    <td>Status</td>
+                    <td>Game Creation date</td>
+                </tr>
+                <tr>
+                    <td>{{game.mode}}</td>
+                    <td>{{game.name}}</td>
+                    <td>{{game.currentPlayerId}}</td>
+                    <td>{{game.status}}</td>
+                    <td>{{game.createdAt}}</td>
+                </tr>
+            </table>
+        </div>
+        
+        {{!-- Players --}}
+        <div class="container text-center mt-5">
+            <h3>Players in this game</h3>
+            <table class="table">
+                <tr>
+                    <td>Name</td>
+                    <td>Email</td>
+                    <td>Game win</td>
+                    <td>Game loose</td>
+                    <td><form action="/games/{{game.id}}/?_method=GET", method="GET"> <button type="submit" class="btn btn-info">Show</button> <input type="hidden" id="include" name="include" value="gamePlayers"> </form> </td>
+                    <td><form action="/games/{{game.id}}/?_method=GET", method="GET"> <button type="submit" class="btn btn-info">Hide</button> </form> </td>
+                </tr>
+                {{#each game.players}}
+                    <tr>
+                        <td>{{name}}</td>
+                        <td>{{email}}</td>
+                        <td>{{gameWin}}</td>
+                        <td>{{gameLost}}</td>
+                        {{#if game.buttonDisabled}}
+                            <td><form action="/games/{{game.id}}/players/{{id}}?_method=DELETE", method="POST"> <button type="submit" class="btn btn-danger" disabled="true" >Remove</button></form></td>
+                        {{else}}
+                            <td><form action="/games/{{game.id}}/players/{{id}}?_method=DELETE", method="POST"> <button type="submit" class="btn btn-danger">Remove</button></form></td>
+                        {{/if}}
+                    </tr>
+                {{/each}}
+            </table>
+        </div>
+        
+        {{!-- Last Shots --}}
+        <div class="container text-center mt-5">
+            <h3>Last Shots</h3>
+            <form id="addShot" action="/games/{{game.id}}/shots", method="POST"></form>
+            <table class="table">
+                <tr>
+                    <td>Player</td>
+                    <td>sector</td>
+                    <td>Multiplicator</td>
+                    <td>Date</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input form="addShot" type="text" id="fsector"></td>
+                    <td><input form="addShot" type="text" id="fmultiplicator"></td>
+                    <td></td>
+                    <td><button form="addShot" type="submit" class="btn btn-success" id="fsubmit">Add shot</button></td>
+                </tr>
+                {{#each game.shots}}
+                    <tr>
+                        <td>{{playerId}}</td>
+                        <td>{{sector}}</td>
+                        <td>{{multiplicator}}</td>
+                        <td>{{createdAt}}</td>
+                    </tr>
+                {{/each}}
+            </table>
+        </div>
+        <a href="/games"><button class="btn btn-dark btn-lg mt-4">Return to the game manager</button></a>
+    </div>
+</body>
+</html>
